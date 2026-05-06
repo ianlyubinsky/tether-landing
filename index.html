@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tether — Stop Paying for Subscriptions You Forgot You Had</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #1e4d3a;
+      --green-mid: #2a5f4e;
+      --green-light: #3a7a61;
+      --green-glow: rgba(42, 95, 78, 0.12);
+      --accent: #38c98a;
+      --accent-dim: rgba(56, 201, 138, 0.15);
+      --ink: #111a14;
+      --ink-mid: #334438;
+      --muted: #6b7c70;
+      --surface: #faf9f7;
+      --surface-2: #f2f0ed;
+      --border: #e4e0da;
+      --red: #e05252;
+      --red-dim: rgba(224, 82, 82, 0.1);
+      --amber: #d97706;
+      --amber-dim: rgba(217, 119, 6, 0.1);
+      --radius: 12px;
+      --radius-lg: 20px;
+      --shadow: 0 2px 16px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--surface);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(250, 249, 247, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.35rem;
+      color: var(--green);
+      letter-spacing: -0.02em;
+    }
+    .nav-cta {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      text-decoration: none;
+    }
+    .nav-cta:hover { background: var(--green-mid); }
+
+    /* HERO */
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 6rem 2rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--accent-dim);
+      color: var(--green-mid);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.85rem;
+      border-radius: 100px;
+      margin-bottom: 1.25rem;
+    }
+    .eyebrow-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.4rem, 4vw, 3.4rem);
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--green-mid);
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--ink-mid);
+      line-height: 1.65;
+      margin-bottom: 2rem;
+      max-width: 480px;
+    }
+
+    .hero-form {
+      display: flex;
+      gap: 0.625rem;
+      margin-bottom: 1rem;
+    }
+    .hero-form input {
+      flex: 1;
+      padding: 0.8rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .hero-form input:focus { border-color: var(--green-mid); }
+    .hero-form input::placeholder { color: var(--muted); }
+    .hero-form button {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      padding: 0.8rem 1.4rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+      font-family: inherit;
+    }
+    .hero-form button:hover { background: var(--green-mid); }
+
+    #success-msg {
+      display: none;
+      background: var(--accent-dim);
+      color: var(--green-mid);
+      border: 1.5px solid var(--accent);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    #success-msg.show { display: block; }
+
+    .hero-trust {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .hero-trust strong { color: var(--ink-mid); }
+
+    /* HERO PHONE MOCKUP */
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+    }
+    .phone-shell {
+      width: 280px;
+      background: #0d1a12;
+      border-radius: 36px;
+      padding: 16px;
+      box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255,255,255,0.06);
+      position: relative;
+    }
+    .phone-screen {
+      background: #111d16;
+      border-radius: 24px;
+      overflow: hidden;
+      padding: 20px 16px;
+    }
+    .phone-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .phone-header-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .phone-badge {
+      background: rgba(56, 201, 138, 0.2);
+      color: #38c98a;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 100px;
+    }
+
+    .phone-total {
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .phone-total-label {
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    .phone-total-amount {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+    .phone-total-sub {
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.35);
+      margin-top: 2px;
+    }
+
+    .ghost-meter-card {
+      background: rgba(224, 82, 82, 0.12);
+      border: 1px solid rgba(224, 82, 82, 0.25);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .ghost-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #e05252;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .ghost-amount {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #ff7070;
+      margin-bottom: 2px;
+    }
+    .ghost-sub {
+      font-size: 0.62rem;
+      color: rgba(255,255,255,0.35);
+    }
+
+    .phone-subs {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .phone-sub-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,0.04);
+      border-radius: 9px;
+      padding: 8px 10px;
+    }
+    .phone-sub-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sub-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 800;
+    }
+    .sub-name { font-size: 0.72rem; color: rgba(255,255,255,0.8); font-weight: 500; }
+    .sub-tag {
+      font-size: 0.58rem;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-weight: 600;
+      margin-top: 1px;
+      display: inline-block;
+    }
+    .tag-ghost { background: rgba(224,82,82,0.2); color: #e05252; }
+    .tag-trial { background: rgba(217,119,6,0.2); color: #d97706; }
+    .tag-ok { background: rgba(56,201,138,0.15); color: #38c98a; }
+    .sub-price { font-size: 0.72rem; color: rgba(255,255,255,0.5); font-weight: 500; }
+
+    /* DIFFERENTIATOR STRIP */
+    .diff-strip {
+      background: var(--green);
+      padding: 1rem 2rem;
+      overflow: hidden;
+    }
+    .diff-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+    .diff-stat {
+      text-align: center;
+      color: rgba(255,255,255,0.9);
+    }
+    .diff-stat-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem;
+      color: var(--accent);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .diff-stat-label {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.55);
+      margin-top: 2px;
+    }
+    .diff-divider { width: 1px; height: 40px; background: rgba(255,255,255,0.12); }
+
+    /* GHOST METER SECTION */
+    .section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+    .section-tag {
+      display: inline-block;
+      background: var(--green-glow);
+      color: var(--green-mid);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.75rem;
+      border-radius: 100px;
+      margin-bottom: 1rem;
+    }
+    .section-tag.red { background: var(--red-dim); color: var(--red); }
+    .section-tag.amber { background: var(--amber-dim); color: var(--amber); }
+
+    .section h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 3vw, 2.75rem);
+      letter-spacing: -0.03em;
+      line-height: 1.18;
+      margin-bottom: 1rem;
+    }
+    .section h2 em { font-style: italic; color: var(--green-mid); }
+
+    .section-sub {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 560px;
+      line-height: 1.65;
+    }
+
+    /* GHOST METER LAYOUT */
+    .ghost-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      margin-top: 3rem;
+    }
+    .ghost-visual {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+    }
+    .ghost-vis-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+    }
+    .ghost-bar-row {
+      margin-bottom: 1rem;
+    }
+    .ghost-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--ink-mid);
+      margin-bottom: 0.35rem;
+    }
+    .ghost-bar-label span:last-child { color: var(--muted); font-weight: 400; }
+    .ghost-bar-bg {
+      background: var(--surface-2);
+      border-radius: 100px;
+      height: 8px;
+      overflow: hidden;
+    }
+    .ghost-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      transition: width 1s cubic-bezier(0.4,0,0.2,1);
+    }
+    .fill-red { background: var(--red); }
+    .fill-amber { background: var(--amber); }
+    .fill-green { background: var(--accent); }
+
+    .ghost-total-box {
+      margin-top: 1.5rem;
+      background: var(--red-dim);
+      border: 1.5px solid rgba(224,82,82,0.2);
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .ghost-total-label { font-size: 0.85rem; font-weight: 600; color: var(--red); }
+    .ghost-total-amount { font-size: 1.4rem; font-weight: 800; color: var(--red); font-family: 'DM Serif Display', serif; }
+
+    .ghost-points {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .ghost-point {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+    .ghost-point-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: var(--surface-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .ghost-point-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 0.2rem;
+    }
+    .ghost-point-body {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* REAL LIFE EXAMPLE */
+    .example-section {
+      background: #f5f3ef;
+      border-top: 1.5px solid var(--border);
+      border-bottom: 1.5px solid var(--border);
+    }
+    .example-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+    .example-header { margin-bottom: 3rem; }
+
+    .story-steps {
+      position: relative;
+    }
+    .story-step {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+    .story-step:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      left: 24px;
+      top: 52px;
+      bottom: -18px;
+      width: 2px;
+      background: var(--border);
+      transform: translateX(-50%);
+    }
+    .step-number {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .step-content {
+      padding-top: 10px;
+    }
+    .step-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 0.35rem;
+    }
+    .step-body {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 580px;
+    }
+    .step-highlight {
+      display: inline-block;
+      background: var(--red-dim);
+      color: var(--red);
+      font-weight: 600;
+      padding: 0 4px;
+      border-radius: 4px;
+    }
+    .step-highlight.green {
+      background: var(--accent-dim);
+      color: var(--green-mid);
+    }
+    .step-highlight.amber {
+      background: var(--amber-dim);
+      color: var(--amber);
+    }
+
+    .story-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-top: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: var(--shadow);
+      font-size: 0.82rem;
+    }
+    .story-card-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .story-card-text { color: var(--ink); }
+    .story-card-text strong { font-weight: 600; }
+    .story-card-text small { color: var(--muted); display: block; font-size: 0.75rem; }
+
+    .story-result {
+      background: var(--green);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+      margin-top: 2.5rem;
+    }
+    .result-stat { text-align: center; }
+    .result-stat-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      color: var(--accent);
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+    .result-stat-label {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.55);
+      margin-top: 4px;
+    }
+
+    /* AUTO CANCEL */
+    .cancel-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      margin-top: 3rem;
+    }
+    .cancel-demo {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .cancel-demo-header {
+      background: var(--surface-2);
+      border-bottom: 1.5px solid var(--border);
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .cancel-demo-title { font-size: 0.85rem; font-weight: 600; color: var(--ink); }
+    .cancel-demo-body { padding: 1.25rem; }
+    .cancel-step-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid var(--surface-2);
+      font-size: 0.83rem;
+    }
+    .cancel-step-row:last-child { border-bottom: none; }
+    .cancel-step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .cancel-step-text { color: var(--ink-mid); line-height: 1.4; }
+
+    .cancel-points {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* COMPOUNDING */
+    .compound-section {
+      background: var(--green);
+      padding: 5rem 2rem;
+    }
+    .compound-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .compound-inner .section-tag { background: rgba(56,201,138,0.2); color: var(--accent); }
+    .compound-inner h2 { color: #fff; }
+    .compound-inner .section-sub { color: rgba(255,255,255,0.6); margin: 0 auto 3rem; }
+
+    .compound-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .compound-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      text-align: left;
+    }
+    .compound-sub-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 0.5rem;
+    }
+    .compound-monthly {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 1rem;
+    }
+    .compound-10yr {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.2rem;
+      color: #fff;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+    .compound-10yr-label { font-size: 0.75rem; color: rgba(255,255,255,0.4); }
+
+    /* HOW IT WORKS */
+    .how-layout {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    .how-step {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .how-step::before {
+      content: attr(data-step);
+      position: absolute;
+      top: -8px;
+      right: 16px;
+      font-family: 'DM Serif Display', serif;
+      font-size: 5rem;
+      color: var(--surface-2);
+      line-height: 1;
+      pointer-events: none;
+    }
+    .how-step-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .how-step-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+    .how-step-body {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* PRIVACY STRIP */
+    .privacy-strip {
+      background: var(--surface-2);
+      border-top: 1.5px solid var(--border);
+      border-bottom: 1.5px solid var(--border);
+      padding: 1.5rem 2rem;
+    }
+    .privacy-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+    .privacy-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--ink-mid);
+    }
+    .privacy-icon { font-size: 1rem; }
+
+    /* FINAL CTA */
+    .final-cta {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 6rem 2rem;
+      text-align: center;
+    }
+    .final-cta h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+    }
+    .final-cta h2 em { font-style: italic; color: var(--green-mid); }
+    .final-cta p {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+    .cta-form {
+      display: flex;
+      gap: 0.625rem;
+      max-width: 440px;
+      margin: 0 auto 1rem;
+    }
+    .cta-form input {
+      flex: 1;
+      padding: 0.875rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .cta-form input:focus { border-color: var(--green-mid); }
+    .cta-form button {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      padding: 0.875rem 1.4rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+    .cta-form button:hover { background: var(--green-mid); }
+    #success-msg-2 {
+      display: none;
+      max-width: 440px;
+      margin: 0 auto;
+      background: var(--accent-dim);
+      color: var(--green-mid);
+      border: 1.5px solid var(--accent);
+      border-radius: 10px;
+      padding: 0.875rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    #success-msg-2.show { display: block; }
+    .cta-fine {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .waitlist-count {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+    .waitlist-avatars {
+      display: flex;
+    }
+    .waitlist-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid var(--surface);
+      margin-left: -6px;
+      background: var(--green-light);
+      font-size: 0.55rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+    }
+    .waitlist-avatar:first-child { margin-left: 0; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1.5px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* MOBILE */
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 4rem 1.5rem 2rem;
+        gap: 2.5rem;
+        text-align: center;
+      }
+      .hero h1 { font-size: 2.4rem; }
+      .hero-sub { margin: 0 auto 2rem; }
+      .hero-form { justify-content: center; }
+      .hero-visual { order: -1; }
+      .phone-shell { width: 240px; }
+      .ghost-layout, .cancel-layout { grid-template-columns: 1fr; }
+      .compound-grid { grid-template-columns: 1fr; }
+      .how-layout { grid-template-columns: 1fr; }
+      .story-result { grid-template-columns: 1fr; }
+      .diff-inner { gap: 1.5rem; }
+      .diff-divider { display: none; }
+      .section { padding: 4rem 1.5rem; }
+      .example-inner { padding: 4rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Tether</div>
+    <a href="#waitlist" class="nav-cta">Join waitlist</a>
+  </nav>
+
+  <!-- HERO -->
+  <section>
+    <div class="hero">
+      <div class="hero-text">
+        <div class="hero-eyebrow">
+          <span class="eyebrow-dot"></span>
+          Subscription tracker
+        </div>
+        <h1>You're paying for subscriptions <em>you forgot exist</em></h1>
+        <p class="hero-sub">Tether finds every forgotten subscription, shows you exactly what you're burning, and cancels the ones you don't want — with one tap.</p>
+        <div id="waitlist-form">
+          <form class="hero-form" onsubmit="handleSubmit(event, 'waitlist')">
+            <input type="email" placeholder="your@email.com" required />
+            <button type="submit">Get early access</button>
+          </form>
+        </div>
+        <div id="success-msg">You're on the list. We'll reach out when we launch.</div>
+        <p class="hero-trust"><strong>820+ people</strong> already on the waitlist · No credit card needed</p>
+      </div>
+      <div class="hero-visual">
+        <div class="phone-shell">
+          <div class="phone-screen">
+            <div class="phone-header">
+              <div class="phone-header-title">Tether</div>
+              <div class="phone-badge">3 ghosts found</div>
+            </div>
+            <div class="phone-total">
+              <div class="phone-total-label">Monthly spend</div>
+              <div class="phone-total-amount">$219.40</div>
+              <div class="phone-total-sub">You thought it was $86/mo</div>
+            </div>
+            <div class="ghost-meter-card">
+              <div class="ghost-label">👻 Ghost Meter</div>
+              <div class="ghost-amount">$47/mo wasted</div>
+              <div class="ghost-sub">3 subs you haven't touched in 60+ days</div>
+            </div>
+            <div class="phone-subs">
+              <div class="phone-sub-row">
+                <div class="phone-sub-left">
+                  <div class="sub-icon" style="background:#e8272720;">
+                    <span style="color:#e82727;">H</span>
+                  </div>
+                  <div>
+                    <div class="sub-name">HBO Max</div>
+                    <span class="sub-tag tag-trial">trial ends tmrw</span>
+                  </div>
+                </div>
+                <div class="sub-price">$15.99</div>
+              </div>
+              <div class="phone-sub-row">
+                <div class="phone-sub-left">
+                  <div class="sub-icon" style="background:#1ed76020;">
+                    <span style="color:#1ed760;">S</span>
+                  </div>
+                  <div>
+                    <div class="sub-name">Spotify</div>
+                    <span class="sub-tag tag-ok">active</span>
+                  </div>
+                </div>
+                <div class="sub-price">$11.99</div>
+              </div>
+              <div class="phone-sub-row">
+                <div class="phone-sub-left">
+                  <div class="sub-icon" style="background:#ff6b0020;">
+                    <span style="color:#ff6b00;">A</span>
+                  </div>
+                  <div>
+                    <div class="sub-name">Adobe CC</div>
+                    <span class="sub-tag tag-ghost">👻 unused 90d</span>
+                  </div>
+                </div>
+                <div class="sub-price">$54.99</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STAT STRIP -->
+  <div class="diff-strip">
+    <div class="diff-inner">
+      <div class="diff-stat">
+        <div class="diff-stat-num">$133/mo</div>
+        <div class="diff-stat-label">average gap between what people think they pay vs. actual</div>
+      </div>
+      <div class="diff-divider"></div>
+      <div class="diff-stat">
+        <div class="diff-stat-num">84%</div>
+        <div class="diff-stat-label">of people underestimate their subscription spend</div>
+      </div>
+      <div class="diff-divider"></div>
+      <div class="diff-stat">
+        <div class="diff-stat-num">8.2</div>
+        <div class="diff-stat-label">active subscriptions per person on average</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GHOST METER -->
+  <section class="section">
+    <div class="section-tag red">Ghost Meter</div>
+    <h2>Find the subscriptions <em>draining you silently</em></h2>
+    <p class="section-sub">A "ghost" subscription is one you're paying for but never use. Tether tracks your actual usage and flags anything you haven't touched in 30, 60, or 90+ days.</p>
+
+    <div class="ghost-layout">
+      <div class="ghost-visual">
+        <div class="ghost-vis-title">Your subscriptions this month</div>
+
+        <div class="ghost-bar-row">
+          <div class="ghost-bar-label">
+            <span>Adobe Creative Cloud</span>
+            <span>$54.99/mo · unused 90d</span>
+          </div>
+          <div class="ghost-bar-bg">
+            <div class="ghost-bar-fill fill-red" style="width:88%;"></div>
+          </div>
+        </div>
+
+        <div class="ghost-bar-row">
+          <div class="ghost-bar-label">
+            <span>Duolingo Plus</span>
+            <span>$13.99/mo · unused 45d</span>
+          </div>
+          <div class="ghost-bar-bg">
+            <div class="ghost-bar-fill fill-amber" style="width:42%;"></div>
+          </div>
+        </div>
+
+        <div class="ghost-bar-row">
+          <div class="ghost-bar-label">
+            <span>Peloton</span>
+            <span>$44/mo · unused 60d</span>
+          </div>
+          <div class="ghost-bar-bg">
+            <div class="ghost-bar-fill fill-red" style="width:72%;"></div>
+          </div>
+        </div>
+
+        <div class="ghost-bar-row">
+          <div class="ghost-bar-label">
+            <span>Spotify</span>
+            <span>$11.99/mo · used daily</span>
+          </div>
+          <div class="ghost-bar-bg">
+            <div class="ghost-bar-fill fill-green" style="width:100%;"></div>
+          </div>
+        </div>
+
+        <div class="ghost-total-box">
+          <span class="ghost-total-label">Wasted on ghosts</span>
+          <span class="ghost-total-amount">$112.98/mo</span>
+        </div>
+      </div>
+
+      <div class="ghost-points">
+        <div class="ghost-point">
+          <div class="ghost-point-icon">👻</div>
+          <div>
+            <div class="ghost-point-title">Usage tracking, not just spend tracking</div>
+            <div class="ghost-point-body">Other apps just show charges. Tether tracks whether you actually use what you're paying for — no bank login required.</div>
+          </div>
+        </div>
+        <div class="ghost-point">
+          <div class="ghost-point-icon">⚡</div>
+          <div>
+            <div class="ghost-point-title">Flags unused subs before the next charge</div>
+            <div class="ghost-point-body">Get alerts when a subscription you haven't used is about to renew, so you can cancel before it hits your card.</div>
+          </div>
+        </div>
+        <div class="ghost-point">
+          <div class="ghost-point-icon">📉</div>
+          <div>
+            <div class="ghost-point-title">Shows the real cost in black and white</div>
+            <div class="ghost-point-body">$15/month sounds harmless. $1,800 over 10 years doesn't. Tether shows you the full picture so the decision is obvious.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REAL LIFE EXAMPLE -->
+  <section class="example-section">
+    <div class="example-inner">
+      <div class="example-header">
+        <div class="section-tag">Real example</div>
+        <h2>Meet Alex. This is <em>exactly</em> what happened.</h2>
+        <p class="section-sub" style="margin-top:0.75rem;">Not a hypothetical. This is a realistic walkthrough of how Tether works for a real person.</p>
+      </div>
+
+      <div class="story-steps">
+
+        <div class="story-step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <div class="step-title">Alex opens Tether and adds his subscriptions</div>
+            <div class="step-body">He imports from email receipts in 2 minutes. No bank login. Tether finds 11 active subscriptions — <span class="step-highlight">he thought he had 5</span>.</div>
+            <div class="story-card">
+              <div class="story-card-icon" style="background:#eaf7f1; color: #2a5f4e; font-size:1rem;">📧</div>
+              <div class="story-card-text">
+                <strong>11 subscriptions found</strong>
+                <small>$278.40/mo total · $3,340.80/yr</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="story-step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <div class="step-title">Ghost Meter lights up immediately</div>
+            <div class="step-body">Three subscriptions haven't been touched in 60+ days. Adobe CC ($54.99/mo) he signed up for during a free trial and forgot about. Peloton ($44/mo) he hasn't opened since January. A cloud storage plan ($9.99/mo) he replaced with iCloud a year ago.</div>
+            <div class="story-card">
+              <div class="story-card-icon" style="background:#fef2f2; font-size:1rem;">👻</div>
+              <div class="story-card-text">
+                <strong style="color: #e05252;">$108.98/mo in ghost subs</strong>
+                <small>$1,307.76/yr being wasted right now</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="story-step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <div class="step-title">Tether shows him how to cancel each one</div>
+            <div class="step-body">He taps "Cancel Adobe CC." Tether walks him through the exact steps — <span class="step-highlight amber">Adobe buries the cancel button 4 menus deep</span>. Tether has pre-mapped every step for 1,000+ services.</div>
+            <div class="story-card">
+              <div class="story-card-icon" style="background:#f0fdf4; color: #2a5f4e; font-size:1rem;">✅</div>
+              <div class="story-card-text">
+                <strong>Adobe CC cancelled</strong>
+                <small>Took 90 seconds. Saving $659.88/yr.</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="story-step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <div class="step-title">Renewal alert saves him from a trial charge</div>
+            <div class="step-body">The next morning, Tether pings him: <span class="step-highlight amber">HBO Max trial ends tomorrow, $15.99 charge incoming</span>. He'd completely forgotten. He cancels in time.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="story-result">
+        <div class="result-stat">
+          <div class="result-stat-num">$124/mo</div>
+          <div class="result-stat-label">saved in the first week</div>
+        </div>
+        <div class="result-stat">
+          <div class="result-stat-num">$1,488</div>
+          <div class="result-stat-label">back in Alex's pocket per year</div>
+        </div>
+        <div class="result-stat">
+          <div class="result-stat-num">45 min</div>
+          <div class="result-stat-label">total time spent in the app</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- AUTO CANCEL -->
+  <section class="section">
+    <div class="section-tag">Auto-cancel guides</div>
+    <h2>Cancel anything in <em>under 2 minutes</em></h2>
+    <p class="section-sub">Companies deliberately make cancellation hard. Tether has pre-mapped the exact steps for 1,000+ services, so you never have to hunt for a buried cancel button again.</p>
+
+    <div class="cancel-layout">
+      <div class="cancel-points">
+        <div class="ghost-point">
+          <div class="ghost-point-icon">🗺️</div>
+          <div>
+            <div class="ghost-point-title">Step-by-step guides for 1,000+ services</div>
+            <div class="ghost-point-body">Netflix, Adobe, Peloton, Duolingo, Amazon Prime — we've mapped the cancel flow for all of them so you don't have to figure it out.</div>
+          </div>
+        </div>
+        <div class="ghost-point">
+          <div class="ghost-point-icon">⏱️</div>
+          <div>
+            <div class="ghost-point-title">Cancel before the next charge hits</div>
+            <div class="ghost-point-body">Tether alerts you 7 days before renewals, giving you time to decide and act — not after you've already been charged.</div>
+          </div>
+        </div>
+        <div class="ghost-point">
+          <div class="ghost-point-icon">🔔</div>
+          <div>
+            <div class="ghost-point-title">Free trial expiry alerts</div>
+            <div class="ghost-point-body">Get notified the morning before a free trial converts to paid. Never get charged for something you meant to cancel.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cancel-demo">
+        <div class="cancel-demo-header">
+          <div class="sub-icon" style="background:#ff6b0015; color:#ff6b00; font-weight:800; width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center;">A</div>
+          <div>
+            <div class="cancel-demo-title">How to cancel Adobe Creative Cloud</div>
+          </div>
+        </div>
+        <div class="cancel-demo-body">
+          <div class="cancel-step-row">
+            <div class="cancel-step-num">1</div>
+            <div class="cancel-step-text">Go to <strong>account.adobe.com</strong> and sign in</div>
+          </div>
+          <div class="cancel-step-row">
+            <div class="cancel-step-num">2</div>
+            <div class="cancel-step-text">Click your profile icon, then <strong>Account & Security</strong></div>
+          </div>
+          <div class="cancel-step-row">
+            <div class="cancel-step-num">3</div>
+            <div class="cancel-step-text">Go to <strong>Plans & payment</strong> in the sidebar</div>
+          </div>
+          <div class="cancel-step-row">
+            <div class="cancel-step-num">4</div>
+            <div class="cancel-step-text">Click <strong>Manage plan</strong> next to Creative Cloud</div>
+          </div>
+          <div class="cancel-step-row">
+            <div class="cancel-step-num">5</div>
+            <div class="cancel-step-text">Select <strong>Cancel your plan</strong> and decline the retention offer</div>
+          </div>
+          <div class="cancel-step-row">
+            <div class="cancel-step-num" style="background:#38c98a;">✓</div>
+            <div class="cancel-step-text" style="color:#2a5f4e; font-weight:600;">Done. Cancellation confirmed.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPOUNDING VIEW -->
+  <section class="compound-section">
+    <div class="compound-inner">
+      <div class="section-tag">10-year view</div>
+      <h2 style="color:#fff;">$15/month doesn't <em>sound</em> like much</h2>
+      <p class="section-sub">Until you see what it actually costs over time. Tether shows you the real long-term number so the decision to cancel becomes obvious.</p>
+
+      <div class="compound-grid">
+        <div class="compound-card">
+          <div class="compound-sub-name">Streaming service you never watch</div>
+          <div class="compound-monthly">$15.99/mo · last used 8 months ago</div>
+          <div class="compound-10yr">$1,918</div>
+          <div class="compound-10yr-label">over 10 years</div>
+        </div>
+        <div class="compound-card">
+          <div class="compound-sub-name">Gym membership you meant to cancel</div>
+          <div class="compound-monthly">$45/mo · last visited 4 months ago</div>
+          <div class="compound-10yr">$5,400</div>
+          <div class="compound-10yr-label">over 10 years</div>
+        </div>
+        <div class="compound-card">
+          <div class="compound-sub-name">Software tool from a free trial</div>
+          <div class="compound-monthly">$29.99/mo · never actually used it</div>
+          <div class="compound-10yr">$3,598</div>
+          <div class="compound-10yr-label">over 10 years</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section">
+    <div class="section-tag">How it works</div>
+    <h2>Set up in <em>2 minutes</em>, save in the first week</h2>
+    <p class="section-sub">No bank login. No credit card. Just import, review, and act.</p>
+
+    <div class="how-layout">
+      <div class="how-step" data-step="1">
+        <div class="how-step-icon">📥</div>
+        <div class="how-step-title">Import your subscriptions</div>
+        <div class="how-step-body">Forward receipts from your email, upload a bank CSV, or add manually. Over 1,000 services pre-filled so it takes seconds.</div>
+      </div>
+      <div class="how-step" data-step="2">
+        <div class="how-step-icon">👀</div>
+        <div class="how-step-title">Tether watches everything</div>
+        <div class="how-step-body">Tracks renewal dates, flags trials, monitors usage vs. payments. Ghost Meter highlights anything you're paying for but not using.</div>
+      </div>
+      <div class="how-step" data-step="3">
+        <div class="how-step-icon">✂️</div>
+        <div class="how-step-title">Cancel what you don't need</div>
+        <div class="how-step-body">One-tap cancel guides for 1,000+ services. Alerts before charges hit. Stay in control without thinking about it.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIVACY STRIP -->
+  <div class="privacy-strip">
+    <div class="privacy-inner">
+      <div class="privacy-item">
+        <span class="privacy-icon">🔒</span>
+        No bank login required
+      </div>
+      <div class="privacy-item">
+        <span class="privacy-icon">🚫</span>
+        No account credentials stored
+      </div>
+      <div class="privacy-item">
+        <span class="privacy-icon">📧</span>
+        Import via email receipts or CSV
+      </div>
+      <div class="privacy-item">
+        <span class="privacy-icon">🛡️</span>
+        Your data stays yours
+      </div>
+    </div>
+  </div>
+
+  <!-- FINAL CTA -->
+  <section id="waitlist">
+    <div class="final-cta">
+      <h2>Stop paying for things <em>you forgot about</em></h2>
+      <p>Join 820+ people getting early access. Free for 3 months at launch for waitlist members.</p>
+
+      <div class="waitlist-count">
+        <div class="waitlist-avatars">
+          <div class="waitlist-avatar">JM</div>
+          <div class="waitlist-avatar">SK</div>
+          <div class="waitlist-avatar">AL</div>
+          <div class="waitlist-avatar">+</div>
+        </div>
+        820+ already signed up
+      </div>
+
+      <div id="cta-form-2">
+        <form class="cta-form" onsubmit="handleSubmit(event, 'cta')">
+          <input type="email" placeholder="your@email.com" required />
+          <button type="submit">Join waitlist</button>
+        </form>
+      </div>
+      <div id="success-msg-2">You're on the list. We'll reach out when we launch.</div>
+      <p class="cta-fine">No credit card. No spam. Unsubscribe any time.</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 Tether. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function handleSubmit(e, form) {
+      e.preventDefault();
+      const email = e.target.querySelector('input[type="email"]').value;
+      console.log('Waitlist signup:', email);
+
+      if (form === 'waitlist') {
+        document.getElementById('waitlist-form').style.display = 'none';
+        document.getElementById('success-msg').classList.add('show');
+      } else if (form === 'cta') {
+        document.getElementById('cta-form-2').style.display = 'none';
+        document.getElementById('success-msg-2').classList.add('show');
+      }
+    }
+
+    // Animate ghost bars on scroll into view
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.ghost-bar-fill').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0';
+            requestAnimationFrame(() => {
+              setTimeout(() => { bar.style.width = width; }, 50);
+            });
+          });
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+
+    document.querySelectorAll('.ghost-visual').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
