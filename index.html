@@ -27,6 +27,27 @@
     --font: 'Inter', system-ui, sans-serif;
   }
 
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f7f6f3;
+      --bg2: #f0ede8;
+      --bg3: #e8e4dd;
+      --surface: #ffffff;
+      --surface2: #f0ede8;
+      --border: #ddd9d0;
+      --green: #16a34a;
+      --green-mid: #15803d;
+      --green-dark: #166534;
+      --green-glow: rgba(22,163,74,0.1);
+      --green-glow2: rgba(22,163,74,0.05);
+      --off-white: #1a1a1e;
+      --muted: #6b7280;
+      --muted2: #9ca3af;
+      --red: #dc2626;
+      --yellow: #d97706;
+    }
+  }
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   html { scroll-behavior: smooth; }
@@ -399,6 +420,12 @@
     overflow: hidden;
     padding: 16px 14px;
     min-height: 480px;
+  }
+
+  @media (prefers-color-scheme: light) {
+    .phone-frame { border-color: #c8c4bc; background: #f0ede8; }
+    .phone-notch { background: #f0ede8; border-color: #ddd9d0; }
+    nav { background: rgba(247,246,243,0.85) !important; }
   }
 
   .phone-header {
@@ -1118,7 +1145,7 @@
       <line x1="16" y1="19" x2="23" y2="23" stroke="#4ade80" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
       <!-- Center node -->
       <circle cx="16" cy="16" r="4" fill="#4ade80"/>
-      <circle cx="16" cy="16" r="2" fill="#0d0d0f"/>
+      <circle cx="16" cy="16" r="2" fill="currentColor" style="color:#0d0d0f"/>
     </svg>
     Tether
   </a>
